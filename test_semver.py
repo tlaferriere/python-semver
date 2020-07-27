@@ -1126,3 +1126,27 @@ def test_next_version_with_versioninfo(version, part, expected):
 )
 def test_repr(version, expected):
     assert repr(version) == expected
+
+
+@pytest.mark.parametrize(
+    "version, other, expected",
+    [
+        (VersionInfo(1, 2, 3), VersionInfo(1, 2, 3), None),
+        (VersionInfo(1, 2, 3, "r.1"), VersionInfo(1, 2, 3, "r.1"), None),
+        (VersionInfo(1, 2, 3, "r.1", "b.1"), VersionInfo(1, 2, 3, "r.1", "b.1"), None),
+        (VersionInfo(1, 2, 3), VersionInfo(1, 2, 4), "patch"),
+        (VersionInfo(1, 2, 4), VersionInfo(1, 2, 3), "patch"),
+        (VersionInfo(1, 2, 3), VersionInfo(1, 2, 5), "patch"),
+        (VersionInfo(1, 2, 5), VersionInfo(1, 2, 3), "patch"),
+        (VersionInfo(1, 2, 3), VersionInfo(1, 3, 3), "minor"),
+        (VersionInfo(1, 3, 3), VersionInfo(1, 2, 3), "minor"),
+        (VersionInfo(1, 2, 3), VersionInfo(1, 4, 3), "minor"),
+        (VersionInfo(1, 4, 3), VersionInfo(1, 2, 3), "minor"),
+        (VersionInfo(1, 2, 3), VersionInfo(2, 2, 3), "major"),
+        (VersionInfo(2, 2, 3), VersionInfo(1, 2, 3), "major"),
+        (VersionInfo(1, 2, 3), VersionInfo(3, 2, 3), "major"),
+        (VersionInfo(3, 2, 3), VersionInfo(1, 2, 3), "major"),
+    ]
+)
+def test_diff_bump(version, other, expected):
+    assert version.diff(other) == expected

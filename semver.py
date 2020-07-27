@@ -50,6 +50,8 @@ __all__ = (
 )
 
 #: Contains the implemented semver.org version of the spec
+from typing import Optional
+
 SEMVER_SPEC_VERSION = "2.0.0"
 
 
@@ -706,6 +708,22 @@ prerelease='pre.2', build='build.4')
             return True
         except ValueError:
             return False
+
+    def diff(self, other: 'VersionInfo') -> Optional[str]:
+        """
+        Obtain the largest bump diff from this version to the other.
+
+        .. versionadded:: 3.0.0
+        The prder in which the versions are is not important.
+
+        :param other: :class:`VersionInfo`
+        :return:
+        """
+        other_dict = other.to_dict()
+        for part_key, part in self.to_dict().items():
+            if part != other_dict[part_key]:
+                return part_key
+        return None
 
 
 @deprecated(replace="semver.VersionInfo.parse", version="2.10.0")
